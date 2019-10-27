@@ -11,6 +11,9 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import _ from 'lodash';
+import { Chart } from "react-google-charts";
+
+const week = 1;
 
 const Nav = () => (
   <Navbar bg="dark" variant="dark">
@@ -20,6 +23,7 @@ const Nav = () => (
 
 const CurrClasses = ({state}) => {
   // tracks whether assignment completion modal is shown or not
+
   const [showLog, setShowLog] = useState(false);
 
   // tracks the assignment that is clicked for completion
@@ -31,7 +35,6 @@ const CurrClasses = ({state}) => {
   // when you submit an assignment, the new assignment list buttons include all previous assignments
   // minus the one submitted
   const handleSubmit = (currInfo) => {
-    console.log(state.classes);
     let newClasses = [];
     let i = 0;
     for (i; i < state.classes.length; i += 1) {
@@ -49,7 +52,6 @@ const CurrClasses = ({state}) => {
         newClasses.push({id: state.classes[i].id, title: state.classes[i].title, assignments: newAssignments});
       }
     }
-    console.log(newClasses);
     state.setClasses(newClasses);
     setShowLog(false);
   }
@@ -67,16 +69,16 @@ const CurrClasses = ({state}) => {
           <Card.Title><h3>Upcoming Assignments</h3></Card.Title>
           <Card.Text>
             <ButtonGroup variant="flush">
-              {state.classes.map(currClass => 
-                currClass.assignments.map(currAssignment => 
-                  
+              {state.classes.map(currClass =>
+                currClass.assignments.map(currAssignment =>
+
                 <React.Fragment key={currAssignment.title}>
                 <Button onClick={() => handleShow(currClass, currAssignment)}>{currClass.title} - {currAssignment.title}</Button>
-                <br /> 
+                <br />
                 </React.Fragment>
               ))}
-            </ButtonGroup> 
-            
+            </ButtonGroup>
+
             <Modal show={showLog} onHide={handleClose}>
               <Modal.Header closeButton>
                 <Modal.Title>Enter hours spent to complete this assignment:</Modal.Title>
@@ -120,7 +122,7 @@ const Recommendations = ({state}) => {
     <Col>
       <Card border="light">
         <Card.Body>
-          <Card.Title><h3>Recommendation:</h3></Card.Title>
+          <Card.Title><h3>Recommendation</h3></Card.Title>
           <Card.Text>{cardText}</Card.Text>
         </Card.Body>
       </Card>
@@ -128,16 +130,60 @@ const Recommendations = ({state}) => {
   )
 };
 
-const Upcoming = () => (
+const Graph = ({state}) => {
+  const options = {
+    title: "This Week's Assignments",
+    legend: {position: 'none'},
+    vAxis: {
+      title: "Median Hours",
+      titleTextStyle: {
+        italic: false
+      }
+    }
+  };
+  let data = [
+    ['Assignment', 'Median Hours Spent', { role: 'style' }],
+  ];
+  let dueSoon = "";
+  let maxHours = 0;
+  for (let i = 0; i < state.classes.length; i += 1) {
+    const assignments = state.classes[i].assignments;
+    for (let j = 0; j < assignments.length; j += 1) {
+      const assignment = assignments[j];
+      if (assignment.week == week){
+        if (assignment.average_time_spent > maxHours){
+          maxHours = assignment.average_time_spent;
+          dueSoon = state.classes[i].title + " " + assignment.title;
+        }
+        data.push([state.classes[i].title + " " + assignment.title, assignment.average_time_spent, ''])
+      }
+    }
+  }
+  for (let i = 0; i < data.length; i += 1){
+    if (data[i][0] == dueSoon){
+      data[i][2] = 'red';
+    }
+  }
+  return (
     <Col>
       <Card border="light">
         <Card.Body>
           <Card.Title><h3>Upcoming Week</h3></Card.Title>
+          <div className={"my-pretty-chart-container"}>
+            <Chart
+              chartType="ColumnChart"
+              data={data}
+              options={options}
+              width="100%"
+              height="300px"
+              legendToggle
+            />
+          </div>
         </Card.Body>
       </Card>
     </Col>
-);
-
+  )
+};
 
 function App() {
   // list of classes with assignments you have yet to complete
@@ -153,14 +199,13 @@ function App() {
     }
     fetchClasses();
   }, [])
-  
   return (
     <React.Fragment>
       <Nav/>
       <Container>
         <Row>
           <CurrClasses key={classes.title} state={{classes, setClasses}}/>
-          <Upcoming />
+          <Graph key={classes.title} state={{classes, setClasses}}/>
         </Row>
         <Row>
           <Recommendations state={{classes, setClasses}}/>
