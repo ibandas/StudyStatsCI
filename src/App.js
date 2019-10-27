@@ -22,12 +22,18 @@ const Nav = () => (
 );
 
 const CurrClasses = ({state}) => {
+  // tracks whether assignment completion modal is shown or not
 
   const [showLog, setShowLog] = useState(false);
+
+  // tracks the assignment that is clicked for completion
+  // logItem = [currentClass, currentAssignment]
   const [logItem, setLogItem] = useState([{id: "", title: "", assignments: []}, {id: "", title: "", average_time_spent: "", completed: ""}]);
 
   const handleClose = () => setShowLog(false);
 
+  // when you submit an assignment, the new assignment list buttons include all previous assignments
+  // minus the one submitted
   const handleSubmit = (currInfo) => {
     let newClasses = [];
     let i = 0;
@@ -50,6 +56,7 @@ const CurrClasses = ({state}) => {
     setShowLog(false);
   }
 
+  // when assignment button is clicked, bring up modal and track which class/assignment it is
   const handleShow = (currClass, currAssignment) => {
     setLogItem([currClass, currAssignment]);
     setShowLog(true);
@@ -97,6 +104,7 @@ const CurrClasses = ({state}) => {
 };
 
 const Recommendations = ({state}) => {
+  // the recommendation is to work on the assignment that takes the most time
   let maxHours = 0;
   let cardText = "";
   if (state.classes[0].assignments.length === 0) {
@@ -178,6 +186,7 @@ const Graph = ({state}) => {
 };
 
 function App() {
+  // list of classes with assignments you have yet to complete
   const [classes, setClasses] = useState([{id: "", title: "", assignments: []}])
   const url = '/data/assignments.json';
 
@@ -190,7 +199,6 @@ function App() {
     }
     fetchClasses();
   }, [])
-
   return (
     <React.Fragment>
       <Nav/>
