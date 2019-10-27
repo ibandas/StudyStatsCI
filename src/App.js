@@ -28,7 +28,7 @@ const CurrClasses = ({state}) => {
 
   // tracks the assignment that is clicked for completion
   // logItem = [currentClass, currentAssignment]
-  const [logItem, setLogItem] = useState([{id: "", title: "", assignments: []}, {id: "", title: "", average_time_spent: "", completed: ""}]);
+  const [logItem, setLogItem] = useState([{id: "", title: "", assignments: []}, {id: "", title: "", completed: "", responses: []}]);
 
   const handleClose = () => setShowLog(false);
 
@@ -103,6 +103,14 @@ const CurrClasses = ({state}) => {
   );
 };
 
+// given an assignment JSON, outputs median time for that assignment
+const median_time = assignment => {
+  const times = assignment.responses.map(response => response.time)
+                .sort((a, b) => a - b);
+  const mid = _.floor(times.length / 2);
+  return _.isEqual(times.length%2, 0) ? _.mean([times[mid-1], times[mid]]) : times[mid];
+}
+
 const Recommendations = ({state}) => {
   // the recommendation is to work on the assignment that takes the most time
   let maxHours = 0;
@@ -112,9 +120,10 @@ const Recommendations = ({state}) => {
   }
   for (let i = 0; i < state.classes.length; i += 1) {
     for (let j = 0; j < state.classes[i].assignments.length; j += 1) {
-      if (state.classes[i].assignments[j].average_time_spent > maxHours) {
-        maxHours = state.classes[i].assignments[j].average_time_spent;
-        cardText = "Past students have spent " + state.classes[i].assignments[j].average_time_spent + " hours on " + state.classes[i].title + " - " + state.classes[i].assignments[j].title + ". We recommend you start this one first!";
+      let median_time_spent = median_time(state.classes[i].assignments[j]);
+      if (median_time_spent > maxHours) {
+        maxHours = median_time_spent;
+        cardText = "Past students have spent " + median_time_spent + " hours on " + state.classes[i].title + " - " + state.classes[i].assignments[j].title + ". We recommend you start this one first!";
       }
     }
   }
@@ -150,17 +159,18 @@ const Graph = ({state}) => {
     const assignments = state.classes[i].assignments;
     for (let j = 0; j < assignments.length; j += 1) {
       const assignment = assignments[j];
-      if (assignment.week == week){
-        if (assignment.average_time_spent > maxHours){
-          maxHours = assignment.average_time_spent;
+      const median_time_spent = median_time(assignment);
+      if (_.isEqual(assignment.week, week)) {
+        if (median_time_spent > maxHours){
+          maxHours = median_time_spent;
           dueSoon = state.classes[i].title + " " + assignment.title;
         }
-        data.push([state.classes[i].title + " " + assignment.title, assignment.average_time_spent, ''])
+        data.push([state.classes[i].title + " " + assignment.title, median_time_spent, ''])
       }
     }
   }
   for (let i = 0; i < data.length; i += 1){
-    if (data[i][0] == dueSoon){
+    if (_.isEqual(data[i][0], dueSoon)) {
       data[i][2] = 'red';
     }
   }

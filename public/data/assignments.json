@@ -7,7 +7,6 @@
         {
           "id": "1",
           "title": "Assignment 1",
-          "average_time_spent": 10,
           "completed": "false",
           "week": 1,
           "responses": [
@@ -24,7 +23,6 @@
         {
           "id": "2",
           "title": "Assignment 2",
-          "average_time_spent": 4,
           "completed": "false",
           "week": 1,
           "responses": [
@@ -47,7 +45,6 @@
         {
           "id": "1",
           "title": "Lab 1",
-          "average_time_spent": 8,
           "completed": "false",
           "week": 1,
           "responses": [
@@ -74,7 +71,6 @@
         {
           "id": "1",
           "title": "HW 1",
-          "average_time_spent": 5,
           "completed": "false",
           "week": 1,
           "responses": [
