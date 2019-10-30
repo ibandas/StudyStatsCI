@@ -12,6 +12,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import _ from 'lodash';
 import { Chart } from "react-google-charts";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Dropdown from 'react-bootstrap/Dropdown';
 
 const week = 1;
 
@@ -142,6 +144,16 @@ const Recommendations = ({state}) => {
 const getBarData = (data, state) => {
   let dueSoon = "";
   let maxHours = 0;
+  const options = {
+    title: "This Week's Assignments",
+    legend: {position: 'none'},
+    vAxis: {
+      title: "Median Hours",
+      titleTextStyle: {
+        italic: false
+      }
+    }
+  };
   for (let i = 0; i < state.classes.length; i += 1) {
     const assignments = state.classes[i].assignments;
     for (let j = 0; j < assignments.length; j += 1) {
@@ -161,38 +173,66 @@ const getBarData = (data, state) => {
       data[i][2] = 'red';
     }
   }
-  return data;
+  return [data, options];
 }
 
 const getScatterData = (data, state) => {
-  
-  return data;
-}
+  let dueSoon = "";
+  let maxHours = 0;
+  let ticks = [];
+  let count = 0;
+  for (let i = 0; i < state.classes.length; i += 1) {
+    let assignment;
+    const assignments = state.classes[i].assignments;
+    for (let j = 0; j < assignments.length; j += 1) {
+      let responses = [];
+      assignment = assignments[j];
 
-const Graph = ({state}) => {
-  const [useBar, setBar] = useState(true);
+      for(let k = 0; k < assignment.responses.length; k++){
+        let response = assignment.responses[k];
+        data.push([{v: count, f: (state.classes[i].title + " " + assignment.title)}, response.time, response.comment, '' ])
+      }
+      ticks.push({v: count, f:(state.classes[i].title + " " + assignment.title)})
+      count++;
+    }
+  }
   const options = {
     title: "This Week's Assignments",
     legend: {position: 'none'},
+    hAxis: {ticks : ticks },
     vAxis: {
-      title: "Median Hours",
+      title: "Hours Spent",
       titleTextStyle: {
         italic: false
       }
     }
   };
+  console.log("DATA IS: ", data)
+  return [data, options];
+}
+
+const Graph = ({state}) => {
+  const [useBar, setBar] = useState(true);
+  
   let data = [];
+  let touple = [];
+  let options = {};
+
   if (useBar) {
     data = [
       ['Assignment', 'Median Hours Spent', { role: 'style' }],
     ];
-    data = getBarData(data, state);
+    touple = getBarData(data, state);
+    data = touple[0]
+    options = touple[1]
   }
   else {
     data = [
-      ['Assignment', 'Hours Spent', 'Comment', {role: 'style'}],
+      ['Assignment', 'Hours Spent', {role: 'tooltip'}, {role: 'style'}],
     ];
-    data = getScatterData(data, state);
+    touple = getScatterData(data, state);
+    data = touple[0]
+    options = touple[1]
   }
   
   console.log(data)
@@ -201,8 +241,12 @@ const Graph = ({state}) => {
       <Card border="light">
         <Card.Body>
           <Card.Title><h3>Upcoming Week</h3></Card.Title>
-          <Button onClick={() => setBar(false)}>Chart Type</Button>
+          <DropdownButton  title="Select Chart Types">
+            <Dropdown.Item onClick={() => setBar(true)}>Median Times</Dropdown.Item>
+            <Dropdown.Item onClick={() => setBar(false)}>Individual Times</Dropdown.Item>
+          </DropdownButton>
           <div className={"my-pretty-chart-container"}>
+            {useBar ?  
             <Chart
               chartType="ColumnChart"
               data={data}
@@ -210,7 +254,14 @@ const Graph = ({state}) => {
               width="100%"
               height="300px"
               legendToggle
-            />
+            /> :
+            <Chart
+              chartType="ScatterChart"
+              data={data}
+              options={options}
+              width="100%"
+              height="300px"
+              legendToggle/>}
           </div>
         </Card.Body>
       </Card>
