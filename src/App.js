@@ -139,20 +139,7 @@ const Recommendations = ({state}) => {
   )
 };
 
-const Graph = ({state}) => {
-  const options = {
-    title: "This Week's Assignments",
-    legend: {position: 'none'},
-    vAxis: {
-      title: "Median Hours",
-      titleTextStyle: {
-        italic: false
-      }
-    }
-  };
-  let data = [
-    ['Assignment', 'Median Hours Spent', { role: 'style' }],
-  ];
+const getBarData = (data, state) => {
   let dueSoon = "";
   let maxHours = 0;
   for (let i = 0; i < state.classes.length; i += 1) {
@@ -174,11 +161,47 @@ const Graph = ({state}) => {
       data[i][2] = 'red';
     }
   }
+  return data;
+}
+
+const getScatterData = (data, state) => {
+  
+  return data;
+}
+
+const Graph = ({state}) => {
+  const [useBar, setBar] = useState(true);
+  const options = {
+    title: "This Week's Assignments",
+    legend: {position: 'none'},
+    vAxis: {
+      title: "Median Hours",
+      titleTextStyle: {
+        italic: false
+      }
+    }
+  };
+  let data = [];
+  if (useBar) {
+    data = [
+      ['Assignment', 'Median Hours Spent', { role: 'style' }],
+    ];
+    data = getBarData(data, state);
+  }
+  else {
+    data = [
+      ['Assignment', 'Hours Spent', 'Comment', {role: 'style'}],
+    ];
+    data = getScatterData(data, state);
+  }
+  
+  console.log(data)
   return (
     <Col>
       <Card border="light">
         <Card.Body>
           <Card.Title><h3>Upcoming Week</h3></Card.Title>
+          <Button onClick={() => setBar(false)}>Chart Type</Button>
           <div className={"my-pretty-chart-container"}>
             <Chart
               chartType="ColumnChart"
