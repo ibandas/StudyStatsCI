@@ -197,6 +197,7 @@ const getScatterData = (data, state) => {
     }
   }
   const options = {
+    tooltip: {isHtml: true},
     title: "This Week's Assignments",
     legend: {position: 'none'},
     hAxis: {ticks : ticks },
