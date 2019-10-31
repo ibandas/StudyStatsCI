@@ -190,7 +190,7 @@ const getScatterData = (data, state) => {
 
       for(let k = 0; k < assignment.responses.length; k++){
         let response = assignment.responses[k];
-        data.push([{v: count, f: (state.classes[i].title + " " + assignment.title)}, response.time,  '<h5>Comment: </h5>' + response.comment, ''])
+        data.push([{v: count, f: (state.classes[i].title + " " + assignment.title)}, response.time,  '<h6>Comment: </h6>' + response.comment + '<h6>Hours Spent: </h6>' + response.time, ''])
       }
       ticks.push({v: count, f:(state.classes[i].title + " " + assignment.title)})
       count++;
