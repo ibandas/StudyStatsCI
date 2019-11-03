@@ -92,6 +92,16 @@ const CurrClasses = ({state}) => {
                   </Form.Group>
                 </Form>
               </Modal.Body>
+              <Modal.Header>
+                <Modal.Title>Enter any comments/feedback about this assignment:</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form>
+                  <Form.Group controlId="exampleForm.ControlTextarea1">
+                    <Form.Control as="textarea" rows="2" />
+                  </Form.Group>
+                </Form>
+              </Modal.Body>
               <Modal.Footer>
                 <Button onClick={() => handleSubmit(logItem)} variant="success">
                   Submit
