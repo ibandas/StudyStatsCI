@@ -86,5 +86,11 @@
         }
       ]
     }
+  ],
+  "users": [
+    {
+      "name": "Lorem",
+      "courses": ["EECS 336", "EECS 211"]
+    }
   ]
 }

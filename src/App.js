@@ -23,7 +23,7 @@ const Nav = () => (
   </Navbar>
 );
 
-const CurrClasses = ({state}) => {
+const CurrClasses = ({classes, allClasses}) => {
   // tracks whether assignment completion modal is shown or not
 
   const [showLog, setShowLog] = useState(false);
@@ -39,22 +39,22 @@ const CurrClasses = ({state}) => {
   const handleSubmit = (currInfo) => {
     let newClasses = [];
     let i = 0;
-    for (i; i < state.classes.length; i += 1) {
-      if (!_.isEqual(state.classes[i], currInfo[0])) {
-        newClasses.push(state.classes[i])
+    for (i; i < classes.classes.length; i += 1) {
+      if (!_.isEqual(classes.classes[i], currInfo[0])) {
+        newClasses.push(classes.classes[i])
       }
       else {
         let newAssignments = [];
         let j = 0;
-        for (j; j < state.classes[i].assignments.length; j += 1) {
-          if (!_.isEqual(currInfo[1], state.classes[i].assignments[j])) {
-            newAssignments.push(state.classes[i].assignments[j])
+        for (j; j < classes.classes[i].assignments.length; j += 1) {
+          if (!_.isEqual(currInfo[1], classes.classes[i].assignments[j])) {
+            newAssignments.push(classes.classes[i].assignments[j])
           }
         }
-        newClasses.push({id: state.classes[i].id, title: state.classes[i].title, assignments: newAssignments});
+        newClasses.push({id: classes.classes[i].id, title: classes.classes[i].title, assignments: newAssignments});
       }
     }
-    state.setClasses(newClasses);
+    classes.setClasses(newClasses);
     setShowLog(false);
   }
 
@@ -71,7 +71,7 @@ const CurrClasses = ({state}) => {
           <Card.Title><h3>Upcoming Assignments</h3></Card.Title>
           <Card.Text>
             <ButtonGroup variant="flush">
-              {state.classes.map(currClass =>
+              {classes.classes.map(currClass =>
                 currClass.assignments.map(currAssignment =>
 
                 <React.Fragment key={currAssignment.title}>
@@ -79,6 +79,7 @@ const CurrClasses = ({state}) => {
                 <br />
                 </React.Fragment>
               ))}
+              <AddClasses classes={classes} allClasses={allClasses}/>
             </ButtonGroup>
 
             <Modal show={showLog} onHide={handleClose}>
@@ -113,6 +114,29 @@ const CurrClasses = ({state}) => {
       </Card>
     </Col>
   );
+};
+
+const AddClasses = ({classes, allClasses}) => {
+  // when you add a class, the new class list include all previous classes
+  // plus the one submitted
+  const handleSubmit = (classes, allClasses) => {
+    let newClasses = [];
+    for (let i = 0; i < classes.classes.length; i += 1) {
+        newClasses.push(classes.classes[i])
+    }
+    for (let i = 0; i < allClasses.allClasses.length; i += 1) {
+        if (allClasses.allClasses[i].title == "Data Structures") {
+          newClasses.push(allClasses.allClasses[i])
+        }
+    }
+    classes.setClasses(newClasses);
+  };
+  // when assignment button is clicked, bring up modal and track which class/assignment it is
+    return (
+      <DropdownButton  className="dropdownButton" title="Add Another Class">
+        <Dropdown.Item className="addClassItem btn-primary" onClick={() => handleSubmit(classes, allClasses)}>Data Structures</Dropdown.Item>
+      </DropdownButton>
+    )
 };
 
 // given an assignment JSON, outputs median time for that assignment
@@ -224,7 +248,7 @@ const getScatterData = (data, state) => {
 
 const Graph = ({state}) => {
   const [useBar, setBar] = useState(true);
-  
+
   let data = [];
   let touple = [];
   let options = {};
@@ -245,19 +269,18 @@ const Graph = ({state}) => {
     data = touple[0]
     options = touple[1]
   }
-  
-  console.log(data)
+
   return (
     <Col>
       <Card border="light">
         <Card.Body>
           <Card.Title><h3>Upcoming Week</h3></Card.Title>
-          <DropdownButton  title="Select Chart Types">
+          <DropdownButton className="dropdownButton" title="Select Chart Type">
             <Dropdown.Item onClick={() => setBar(true)}>Median Times</Dropdown.Item>
             <Dropdown.Item onClick={() => setBar(false)}>Individual Times</Dropdown.Item>
           </DropdownButton>
           <div className={"my-pretty-chart-container"}>
-            {useBar ?  
+            {useBar ?
             <Chart
               chartType="ColumnChart"
               data={data}
@@ -283,6 +306,7 @@ const Graph = ({state}) => {
 function App() {
   // list of classes with assignments you have yet to complete
   const [classes, setClasses] = useState([{id: "", title: "", assignments: []}])
+  const [allClasses, setAllClasses] = useState([{id: "", title: "", assignments: []}])
   const url = '/data/assignments.json';
 
   useEffect(() => {
@@ -290,16 +314,19 @@ function App() {
       const response = await fetch(url);
       if (!response.ok) throw response;
       const json = await response.json();
-      setClasses(json.courses);
+      setAllClasses(json.courses);
+      let userCourses = json.users[0].courses;
+      setClasses(json.courses.filter(course => userCourses.includes(course.id)));
     }
     fetchClasses();
   }, [])
+
   return (
     <React.Fragment>
       <Nav/>
       <Container>
-        <Row>
-          <CurrClasses key={classes.title} state={{classes, setClasses}}/>
+      <Row>
+          <CurrClasses key={classes.title} classes={{classes, setClasses}} allClasses={{allClasses, setAllClasses}}/>
           <Graph key={classes.title} state={{classes, setClasses}}/>
         </Row>
         <Row>
