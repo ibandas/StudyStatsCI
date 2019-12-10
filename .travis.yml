@@ -14,10 +14,13 @@ cache:
   - node_modules
   # folder with Cypress binary
   - ~/.cache
+before_install:
+  - npm install
 script:
+  - npm test
+  - npm run build
   - npm run test:ci
 after_success:
-  - npm run build
   - npm install -g firebase-tools
   - firebase use hosting --token $FIREBASE_TOKEN
   - firebase deploy --token $FIREBASE_TOKEN --non-interactive
