@@ -64,7 +64,8 @@ const CurrClasses = ({classes, allClasses}) => {
                 {classes.classes.map(currClass =>
                   currClass.assignments.map(currAssignment =>
                   <React.Fragment key={currAssignment.title}>
-                  <Button onClick={() => handleShow(currClass, currAssignment)}>{currClass.title} - {currAssignment.title}</Button>
+                  <Button data-cy="class" 
+                  onClick={() => handleShow(currClass, currAssignment)}>{currClass.title} - {currAssignment.title}</Button>
                   <br />
                   </React.Fragment>
                 ))}
