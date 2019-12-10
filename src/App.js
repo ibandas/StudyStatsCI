@@ -112,7 +112,7 @@ const getBarData = (data, state) => {
   }
   for (let i = 0; i < data.length; i += 1){
     if (_.isEqual(data[i][0], dueSoon)) {
-      data[i][2] = 'red';
+      data[i][2] = 'purple';
     }
   }
   return [data, options];

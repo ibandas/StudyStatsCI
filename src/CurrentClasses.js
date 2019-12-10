@@ -63,7 +63,6 @@ const CurrClasses = ({classes, allClasses}) => {
               <ButtonGroup variant="flush">
                 {classes.classes.map(currClass =>
                   currClass.assignments.map(currAssignment =>
-  
                   <React.Fragment key={currAssignment.title}>
                   <Button onClick={() => handleShow(currClass, currAssignment)}>{currClass.title} - {currAssignment.title}</Button>
                   <br />
