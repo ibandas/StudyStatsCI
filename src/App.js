@@ -14,6 +14,7 @@ import _ from 'lodash';
 import { Chart } from "react-google-charts";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from 'react-bootstrap/Dropdown';
+import CurrentClasses from "./CurrentClasses.js"
 
 const week = 1;
 
@@ -22,99 +23,6 @@ const Nav = () => (
     <Navbar.Brand href="#home">Study Stats</Navbar.Brand>
   </Navbar>
 );
-
-const CurrClasses = ({classes, allClasses}) => {
-  // tracks whether assignment completion modal is shown or not
-
-  const [showLog, setShowLog] = useState(false);
-
-  // tracks the assignment that is clicked for completion
-  // logItem = [currentClass, currentAssignment]
-  const [logItem, setLogItem] = useState([{id: "", title: "", assignments: []}, {id: "", title: "", completed: "", responses: []}]);
-
-  const handleClose = () => setShowLog(false);
-
-  // when you submit an assignment, the new assignment list buttons include all previous assignments
-  // minus the one submitted
-  const handleSubmit = (currInfo) => {
-    let newClasses = [];
-    let i = 0;
-    for (i; i < classes.classes.length; i += 1) {
-      if (!_.isEqual(classes.classes[i], currInfo[0])) {
-        newClasses.push(classes.classes[i])
-      }
-      else {
-        let newAssignments = [];
-        let j = 0;
-        for (j; j < classes.classes[i].assignments.length; j += 1) {
-          if (!_.isEqual(currInfo[1], classes.classes[i].assignments[j])) {
-            newAssignments.push(classes.classes[i].assignments[j])
-          }
-        }
-        newClasses.push({id: classes.classes[i].id, title: classes.classes[i].title, assignments: newAssignments});
-      }
-    }
-    classes.setClasses(newClasses);
-    setShowLog(false);
-  }
-
-  // when assignment button is clicked, bring up modal and track which class/assignment it is
-  const handleShow = (currClass, currAssignment) => {
-    setLogItem([currClass, currAssignment]);
-    setShowLog(true);
-  };
-
-  return (
-    <Col>
-      <Card border="light">
-        <Card.Body>
-          <Card.Title><h3>Upcoming Assignments</h3></Card.Title>
-          <Card.Text>
-            <ButtonGroup variant="flush">
-              {classes.classes.map(currClass =>
-                currClass.assignments.map(currAssignment =>
-
-                <React.Fragment key={currAssignment.title}>
-                <Button onClick={() => handleShow(currClass, currAssignment)}>{currClass.title} - {currAssignment.title}</Button>
-                <br />
-                </React.Fragment>
-              ))}
-              <AddClasses classes={classes} allClasses={allClasses}/>
-            </ButtonGroup>
-
-            <Modal show={showLog} onHide={handleClose}>
-              <Modal.Header closeButton>
-                <Modal.Title>Enter hours spent to complete this assignment:</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form>
-                  <Form.Group controlId="exampleForm.ControlTextarea1">
-                    <Form.Control as="textarea" rows="2" />
-                  </Form.Group>
-                </Form>
-              </Modal.Body>
-              <Modal.Header>
-                <Modal.Title>Enter any comments/feedback about this assignment:</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form>
-                  <Form.Group controlId="exampleForm.ControlTextarea1">
-                    <Form.Control as="textarea" rows="2" />
-                  </Form.Group>
-                </Form>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button onClick={() => handleSubmit(logItem)} variant="success">
-                  Submit
-                </Button>
-              </Modal.Footer>
-            </Modal>
-          </Card.Text>
-        </Card.Body>
-      </Card>
-    </Col>
-  );
-};
 
 const AddClasses = ({classes, allClasses}) => {
   // when you add a class, the new class list include all previous classes
@@ -326,7 +234,7 @@ function App() {
       <Nav/>
       <Container>
       <Row>
-          <CurrClasses key={classes.title} classes={{classes, setClasses}} allClasses={{allClasses, setAllClasses}}/>
+          <CurrentClasses key={classes.title} classes={{classes, setClasses}} allClasses={{allClasses, setAllClasses}}/>
           <Graph key={classes.title} state={{classes, setClasses}}/>
         </Row>
         <Row>
