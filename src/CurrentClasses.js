@@ -64,7 +64,7 @@ const CurrClasses = ({classes, allClasses}) => {
                 {classes.classes.map(currClass =>
                   currClass.assignments.map(currAssignment =>
                   <React.Fragment key={currAssignment.title}>
-                  <Button data-cy="class" 
+                  <Button data-cy="class"
                   onClick={() => handleShow(currClass, currAssignment)}>{currClass.title} - {currAssignment.title}</Button>
                   <br />
                   </React.Fragment>
@@ -93,7 +93,7 @@ const CurrClasses = ({classes, allClasses}) => {
                   </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                  <Button onClick={() => handleSubmit(logItem)} variant="success">
+                  <Button data-cy="submit" onClick={() => handleSubmit(logItem)} variant="success">
                     Submit
                   </Button>
                 </Modal.Footer>
