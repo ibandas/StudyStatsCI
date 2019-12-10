@@ -36,7 +36,23 @@ const CurrClasses = ({classes, allClasses}) => {
 
   // when you submit an assignment, the new assignment list buttons include all previous assignments
   // minus the one submitted
-
+  const handleSubmit = (currInfo) => {
+    let newClasses = [];
+    let i = 0;
+    for (i; i < classes.classes.length; i += 1) {
+      if (!_.isEqual(classes.classes[i], currInfo[0])) {
+        newClasses.push(classes.classes[i])
+      }
+      else {
+        let newAssignments = [];
+        let j = 0;
+        for (j; j < classes.classes[i].assignments.length; j += 1) {
+          if (!_.isEqual(currInfo[1], classes.classes[i].assignments[j])) {
+            newAssignments.push(classes.classes[i].assignments[j])
+          }
+        }
+        newClasses.push({id: classes.classes[i].id, title: classes.classes[i].title, assignments: newAssignments});
+      }
     }
     classes.setClasses(newClasses);
     setShowLog(false);
