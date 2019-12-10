@@ -5,41 +5,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Card from 'react-bootstrap/Card';
 import ButtonGroup from 'react-bootstrap/ListGroup';
 import Container from 'react-bootstrap/Container';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import _ from 'lodash';
-import { Chart } from "react-google-charts";
-import DropdownButton from "react-bootstrap/DropdownButton";
-import Dropdown from 'react-bootstrap/Dropdown';
 
-const week = 1;
-
-const Nav = () => (
-  <Navbar bg="dark" variant="dark">
-    <Navbar.Brand href="#home">Study Stats</Navbar.Brand>
-  </Navbar>
-);
-
-const CurrClasses = ({classes, allClasses}) => {
-  // tracks whether assignment completion modal is shown or not
-
-  const [showLog, setShowLog] = useState(false);
-
-  // tracks the assignment that is clicked for completion
-  // logItem = [currentClass, currentAssignment]
-  const [logItem, setLogItem] = useState([{id: "", title: "", assignments: []}, {id: "", title: "", completed: "", responses: []}]);
-
-  const handleClose = () => setShowLog(false);
-
-  // when you submit an assignment, the new assignment list buttons include all previous assignments
-  // minus the one submitted
-  const handleSubmit = (currInfo) => {
-    let newClasses = [];
-    let i = 0;
-    for (i; i < classes.classes.length; i += 1) {
       if (!_.isEqual(classes.classes[i], currInfo[0])) {
         newClasses.push(classes.classes[i])
       }
