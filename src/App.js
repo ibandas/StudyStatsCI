@@ -44,7 +44,7 @@ const CurrClasses = ({classes, allClasses}) => {
         newClasses.push(classes.classes[i])
       }
       else {
-        let newAssignme = [];
+        let newAssignments = [];
         let j = 0;
         for (j; j < classes.classes[i].assignments.length; j += 1) {
           if (!_.isEqual(currInfo[1], classes.classes[i].assignments[j])) {
